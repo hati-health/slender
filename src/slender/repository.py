@@ -53,8 +53,10 @@ class BaseRepository:
         current_row_factory = cur.row_factory
 
         cur.row_factory = class_row(model or self.model)
-        result = await cur.fetchone()
-        cur.row_factory = current_row_factory
+        try:
+            result = await cur.fetchone()
+        finally:
+            cur.row_factory = current_row_factory
 
         return result
 
