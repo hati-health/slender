@@ -8,7 +8,7 @@ import sentry_sdk
 from psycopg.rows import class_row
 from psycopg_pool import AsyncConnectionPool
 
-domain = contextvars.ContextVar("domain")
+domain = contextvars.ContextVar("domain", default=None)
 
 
 async def ensure_pool_opened(pool: AsyncConnectionPool) -> None:
@@ -19,7 +19,7 @@ async def ensure_pool_opened(pool: AsyncConnectionPool) -> None:
 class BaseRepository:
     model = None
 
-    def __init__(self, pool: AsyncConnectionPool, domain: str | None = None) -> None:
+    def __init__(self, pool: AsyncConnectionPool, domain: str) -> None:
         self.pool = pool
         self.domain = domain
 
