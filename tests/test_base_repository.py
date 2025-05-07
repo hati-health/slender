@@ -74,7 +74,7 @@ class SampleModelManager(BaseRepository):
         return await self.fetch_value("SELECT COUNT(*) FROM samples", ())
 
 
-# using fixgure db which creates table samples. With type annotations
+# using fixture db which creates table samples. With type annotations
 class TestBaseManager:
     async def test_fetchone(self, db: DB) -> None:
         manager = SampleModelManager(db.pool, "test.sample")
