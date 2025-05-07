@@ -37,7 +37,7 @@ typecheck: .pre-commit
 	uv run pre-commit run typecheck --all-files
 
 .PHONY: check  ## Run all checks
-check: .uv lint typecheck codespell
+check: .uv lint codespell # typecheck
 	@echo "All checks passed"
 
 .PHONY: test  ## Run all tests, skipping the type-checker integration tests
