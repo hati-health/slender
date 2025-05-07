@@ -13,28 +13,44 @@ SlenderQL - Missing library for working with raw SQL in Python/psycopg
 
 ```python
 
-from slenderql.repository import Filter, ILike
+from slenderql.repository import Filter, ILike, GTE, LT
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class User(BaseModel):
     name: str
     email: str
-    age: int
+    joined_at: datetime
 
 
 class UserRepository(BaseRepository):
     model = User
 
-    async def all(self, query: str | None = None, email: str | None = None) -> list[User]:
+    async def all(
+        self,
+        query: str | None = None,
+        after: datetime | None = None,
+        before: datetime | None = None,
+        limit: int = 100,
+        offset: int = 0,
+    ) -> list[User]:
         return await self.fetchall(
             """
             SELECT * FROM users
-            WHERE {query} AND {email}
+            WHERE ({name} OR {email}) AND
+                {after} AND
+                {before}
+            ORDER BY joined_at DESC
+            LIMIT %s OFFSET %s
             """,
             (
                 ILike("name", query),
-                Filter("email", "email = %s", email),
+                ILike("email", query),
+                GTE("after", after, "joined_at"),
+                LT("before", before, "joined_at"),
+                limit,
+                offset,
             )
         )
 ```
