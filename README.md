@@ -24,7 +24,7 @@ uv add SlenderQL
 
 ```python
 
-from slenderql.repository import Filter, ILike, GTE, LT, BaseRepository
+from slenderql.repository import Filter, ILike, GTE, LT, BaseRepository, DB
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -64,4 +64,20 @@ class UserRepository(BaseRepository):
                 offset,
             )
         )
+
+
+class RepostoryManager(DB):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.users = UserRepository(self)
+
+
+db = RepostoryManager(
+    f"user=postgres "
+    f"password=postgres "
+    f"host=postgres "
+    f"dbname=postgres"
+)
+
+users = await db.users.all(query="alex")
 ```
