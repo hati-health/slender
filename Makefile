@@ -32,8 +32,12 @@ lint: .uv
 codespell: .pre-commit
 	uv run pre-commit run codespell --all-files
 
+.PHONY: pip-audit  ## Run all checks
+pip-audit: .uv
+	uv run --with pip-audit pip-audit --desc
+
 .PHONY: check  ## Run all checks
-check: .uv lint codespell
+check: .uv lint codespell pip-audit
 	@echo "All checks passed"
 
 .PHONY: test  ## Run all tests
