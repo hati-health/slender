@@ -118,7 +118,7 @@ def find_all_or_filters(data: str) -> list[str]:
     )
 
     result = []
-    grouped_result = [[] for g in groups]
+    grouped_result = []
 
     for group_index in range(len(groups)):
         group = groups[group_index]
