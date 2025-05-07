@@ -1,0 +1,63 @@
+[project]
+name = "slender"
+version = "0.1.0"
+description = "Missing library for working with raw SQL in Python/psycopg"
+readme = "README.md"
+authors = [
+    { name = "Aleksandr Gridnev", email = "gridnev.alexandr@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "psycopg[binary,pool]>=3.2.7",
+    "pydantic>=2.11.4",
+    "sentry-sdk[fastapi]>=2.27.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pip-audit>=2.9.0",
+    "pyright>=1.1.400",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-cov>=6.1.1",
+    "pytest-mock>=3.14.0",
+    "ruff>=0.11.8",
+]
+
+[tool.ruff.lint]
+select = [
+    "ALL",
+]
+ignore = [
+    "D", # Do not lint / require docstrings so far
+    "S101", # Conflicting requirements
+    "COM812", # Conflicting requirements
+    "ISC001", # Conflicting requirements
+    "FA", # We don't want to support python below 3.10
+    "ANN401", # Usage of Any is allowed
+    "FIX002", # Allow to have TODOs, if they have reference to ticket
+    # FBT003 forces to use named bool params which is fine, but
+    # FBT001 and FBT002 are useless. We have a lot of cases when
+    # bool flags have defaults and we want to use them.
+    "FBT001",
+    "FBT002",
+]
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = [
+    "PLR2004", # we do want to allow magic numbers in tests
+    "ARG002", # fixture db is "not used" in tests, but it is required to setup db
+]
+
+[tool.pytest.ini_options]
+addopts = "--log-level=INFO --cov-fail-under=96.60 --asyncio-mode=auto -vv"
+python_files = [
+    "test_*.py",
+]

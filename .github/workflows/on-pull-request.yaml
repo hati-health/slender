@@ -1,0 +1,41 @@
+on: pull_request
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v3.4.0
+      - uses: actions/setup-python@v4.5.0
+        with:
+          python-version: 3.12
+
+      - name: Install Python requirements
+        run: |
+          pip install uv
+          uv sync --frozen --all-extras
+
+      - name: Run checks
+        run: |
+          make check
+
+  test:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v3.4.0
+
+      - name: Create .env for tests
+        run: |
+          echo -e "\n" >> .env-test
+          echo POSTGRES_HOST=postgres >> .env-test
+
+      - name: Build Docker images
+        run: |
+          docker buildx create --use --driver=docker-container
+          docker buildx bake -f compose.yaml --set *.cache-to="type=gha,mode=max" --set *.cache-from="type=gha" --load
+
+      - name: Run tests in Docker
+        run: make docker-test
