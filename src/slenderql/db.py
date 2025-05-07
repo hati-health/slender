@@ -1,7 +1,7 @@
 from psycopg import sql
 from psycopg_pool import AsyncConnectionPool
 
-from slender.repository import ensure_pool_opened
+from slenderql.repository import ensure_pool_opened
 
 
 class DB:

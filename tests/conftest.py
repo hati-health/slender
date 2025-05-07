@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from slender.db import DB
+from slenderql.db import DB
 
 from .fixtures import *  # noqa: F403
 

@@ -1,5 +1,5 @@
 [project]
-name = "slender"
+name = "SlenderQL"
 version = "0.1.0"
 description = "Missing library for working with raw SQL in Python/psycopg"
 readme = "README.md"
