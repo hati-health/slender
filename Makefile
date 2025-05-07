@@ -32,15 +32,11 @@ lint: .uv
 codespell: .pre-commit
 	uv run pre-commit run codespell --all-files
 
-.PHONY: typecheck  ## Perform type-checking
-typecheck: .pre-commit
-	uv run pre-commit run typecheck --all-files
-
 .PHONY: check  ## Run all checks
-check: .uv lint codespell # typecheck
+check: .uv lint codespell
 	@echo "All checks passed"
 
-.PHONY: test  ## Run all tests, skipping the type-checker integration tests
+.PHONY: test  ## Run all tests
 test: .uv
 	uv run coverage run -m pytest --durations=10
 
@@ -48,7 +44,7 @@ test: .uv
 benchmark: .uv
 	uv run coverage run -m pytest --durations=10 --benchmark-enable tests/benchmarks
 
-.PHONY: testcov  ## Run tests and generate a coverage report, skipping the type-checker integration tests
+.PHONY: testcov  ## Run tests and generate a coverage report
 testcov: test
 	@echo "building coverage html"
 	@uv run coverage html
@@ -56,7 +52,7 @@ testcov: test
 	@uv run coverage lcov
 
 .PHONY: all  ## Run the standard set of checks performed in CI
-all: lint typecheck codespell testcov
+all: lint codespell testcov
 
 .PHONY: clean  ## Clear local caches and build artifacts
 clean:

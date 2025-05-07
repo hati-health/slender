@@ -24,10 +24,3 @@ repos:
     types: [python]
     language: system
     pass_filenames: false
-  # - id: typecheck
-  #   name: Typecheck
-  #   entry: uv run pyright src
-  #   types: [python]
-  #   language: system
-  #   pass_filenames: false
-  #   skip: true
