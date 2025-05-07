@@ -1,6 +1,5 @@
 name: Publish Python 🐍 distribution 📦 to PyPI
 
-# run it on tag pushes as well
 on:
   push:
     branches:
