@@ -9,11 +9,22 @@ SlenderQL - Missing library for working with raw SQL in Python/psycopg
 - Optimizes work with multiple filters in SELECTs or optional values in UPDATEs
 - Uses only python syntax, so highlighted by default in IDEs
 
+### Installation
+
+```bash
+pip install SlenderQL
+```
+
+or
+```bash
+uv add SlenderQL
+```
+
 ### Usage
 
 ```python
 
-from slenderql.repository import Filter, ILike, GTE, LT
+from slenderql.repository import Filter, ILike, GTE, LT, BaseRepository
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -38,9 +49,9 @@ class UserRepository(BaseRepository):
         return await self.fetchall(
             """
             SELECT * FROM users
-            WHERE ({name} OR {email}) AND
-                {after} AND
-                {before}
+            WHERE ({name} OR {email})
+                AND {after}
+                AND {before}
             ORDER BY joined_at DESC
             LIMIT %s OFFSET %s
             """,
