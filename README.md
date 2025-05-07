@@ -3,13 +3,16 @@ SlenderQL - Missing library for working with raw SQL in Python/psycopg
 
 [![PyPI version](https://img.shields.io/pypi/v/slenderql.svg)](https://pypi.org/project/slenderql/)
 
-<img align="left" width="440" height="180" alt="Missing raw SQL tooling for python" src="https://github.com/user-attachments/assets/7f714119-e764-4427-b1b4-43051ead4a17" />
+<img align="left" width="440" height="142" alt="Missing raw SQL tooling for python" src="https://github.com/user-attachments/assets/96a58417-a655-444c-bc99-bf2f60f2ae81" />
 
 - 💯 No ORM, no magic, just SQL
 - 🎨 Highlighted by default in IDEs
 - 🏜️ DRY you queries, without losing control
 
-### Installation
+<br>
+<br>
+
+## Installation
 
 ```bash
 pip install SlenderQL
@@ -20,7 +23,7 @@ or
 uv add SlenderQL
 ```
 
-### Usage
+## Usage
 
 ```python
 
