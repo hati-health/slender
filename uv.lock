@@ -657,7 +657,7 @@ fastapi = [
 ]
 
 [[package]]
-name = "slender"
+name = "slenderql"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

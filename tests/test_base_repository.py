@@ -1,8 +1,8 @@
 import pytest
 from pydantic import BaseModel
 
-from slender.db import DB
-from slender.repository import (
+from slenderql.db import DB
+from slenderql.repository import (
     GT,
     GTE,
     LT,

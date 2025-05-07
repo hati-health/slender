@@ -1,4 +1,4 @@
-sources = src/slender tests
+sources = src/slenderql tests
 
 .PHONY: .uv  ## Check that uv is installed
 .uv:
