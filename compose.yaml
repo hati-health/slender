@@ -5,8 +5,7 @@ services:
       dockerfile: Dockerfile
     pull_policy: build
     env_file: .env-test
-    # command: [ "make", "test" ]
-    command: [ "ls" ]
+    command: [ "make", "test" ]
     depends_on:
       postgres:
         condition: service_healthy
