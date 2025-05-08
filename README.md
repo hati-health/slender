@@ -7,7 +7,7 @@ SlenderQL - Missing library for working with raw SQL in Python/psycopg
 
 - 💯 No ORM, no magic, just SQL
 - 🎨 Highlighted by default in IDEs
-- 🏜️ DRY you queries, without losing control
+- 🏜️ Keeps your queries DRY
 - 🧐 Pydantic and Psycopg under the hood
 
 
