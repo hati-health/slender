@@ -1,6 +1,7 @@
 import contextvars
 import re
 from collections.abc import Callable
+from contextlib import AbstractContextManager, contextmanager
 from typing import Any
 
 import psycopg
@@ -47,28 +48,23 @@ class BaseRepository:
         with sentry_sdk.start_span(op="db.sql.query", description=query):
             await cur.execute(*prepare_query_statements(query, params))
 
-        if not model:
-            return await cur.fetchone()
-
-        current_row_factory = cur.row_factory
-
-        cur.row_factory = class_row(model or self.model)
-        try:
-            result = await cur.fetchone()
-        finally:
-            cur.row_factory = current_row_factory
-
-        return result
+        with overridden_row_factory(cur, model) as effective_cur:
+            return await effective_cur.fetchone()
 
     async def fetchall_cur(
-        self, cur: psycopg.AsyncCursor, query: str, params: list[Any]
+        self,
+        cur: psycopg.AsyncCursor,
+        query: str,
+        params: list[Any],
+        model: Callable | None = None,
     ) -> Any:
         domain.set(self.domain)
         await ensure_pool_opened(self.pool)
         with sentry_sdk.start_span(op="db.sql.query", description=query):
             await cur.execute(*prepare_query_statements(query, params))
 
-        return await cur.fetchall()
+        with overridden_row_factory(cur, model) as effective_cur:
+            return await effective_cur.fetchall()
 
     async def fetchall(
         self, query: str, params: list[Any], model: Callable | None = None
@@ -295,3 +291,17 @@ class OptionalValue(FieldStatement):
 def escape(query_word: str) -> str:
     escape_symbols = "()|&:*!"
     return re.sub(f"([{re.escape(escape_symbols)}])", r"\\\1", query_word)
+
+
+@contextmanager
+def overridden_row_factory(
+    cur: psycopg.AsyncCursor,
+    model: Callable | None = None,
+) -> AbstractContextManager[psycopg.AsyncCursor]:
+    original_row_factory = cur.row_factory
+    if model:
+        cur.row_factory = class_row(model)
+    try:
+        yield cur
+    finally:
+        cur.row_factory = original_row_factory
