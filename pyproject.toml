@@ -1,6 +1,6 @@
 [project]
 name = "SlenderQL"
-version = "0.1.4"
+version = "0.1.5"
 description = "Missing library for working with raw SQL in Python/psycopg"
 readme = "README.md"
 authors = [
@@ -10,7 +10,10 @@ requires-python = ">=3.12"
 dependencies = [
     "psycopg[binary,pool]>=3.2.7",
     "pydantic>=2.11.4",
+    "requests>2.32.4",
     "sentry-sdk[fastapi]>=2.27.0",
+    "starlette>=0.47.2",
+    "urllib3>=2.5.0",
 ]
 
 [build-system]
@@ -20,6 +23,7 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "pip-audit>=2.9.0",
+    "pre-commit>=4.3.0",
     "pyright>=1.1.400",
     "pytest>=8.3.5",
     "pytest-asyncio>=0.26.0",
