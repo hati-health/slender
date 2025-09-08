@@ -237,6 +237,31 @@ class Filter(FieldStatement):
         return []
 
 
+class RequiredFilter(FieldStatement):
+    def __init__(self, name: str, param: Any) -> None:
+        super().__init__(name, f"{name}=%s", param, f"{name} IS NULL")
+
+    def or_mode(self) -> None:
+        pass
+
+    def and_mode(self) -> None:
+        pass
+
+    @property
+    def rendered_query(self) -> str:
+        if self.is_specified:
+            return self.query
+
+        return self.not_specified_query
+
+    @property
+    def rendered_params(self) -> list[Any]:
+        if self.is_specified:
+            return [self.param]
+
+        return []
+
+
 class GT(Filter):
     def __init__(self, name: str, param: Any, column_name: str | None = None) -> None:
         super().__init__(name, f"{column_name or name} > %s", param)

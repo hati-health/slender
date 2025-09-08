@@ -13,6 +13,7 @@ from slenderql.repository import (
     ILike,
     OptionalValue,
     OrAndNotSupportedError,
+    RequiredFilter,
     prepare_query_statements,
 )
 
@@ -32,7 +33,9 @@ class SampleModelManager(BaseRepository):
         )
 
     async def get_all(
-        self, search: str | None = None, gt_id: int | None = None
+        self,
+        search: str | None = None,
+        gt_id: int | None = None,
     ) -> list[SampleModel]:
         return await self.fetchall(
             """
@@ -281,6 +284,50 @@ class TestPrepareQuery:
                 AND (sample_id > %s OR sample_id < %s)
             """,
             (1, 3),
+        )
+
+    def test_required_filter(self) -> None:
+        query = """
+            SELECT * FROM table WHERE
+                ({name} OR {description})
+                AND ({gt_id} OR {lt_id})
+            """
+        params = (
+            ILike("name", None),
+            RequiredFilter("description", None),
+            Filter("gt_id", "sample_id > %s", 1),
+            Filter("lt_id", "sample_id < %s", 3),
+        )
+
+        assert prepare_query_statements(query, params) == (
+            """
+            SELECT * FROM table WHERE
+                (true OR description IS NULL)
+                AND (sample_id > %s OR sample_id < %s)
+            """,
+            (1, 3),
+        )
+
+    def test_required_filter_with_specified_value(self) -> None:
+        query = """
+            SELECT * FROM table WHERE
+                ({name} OR {description})
+                AND ({gt_id} OR {lt_id})
+            """
+        params = (
+            ILike("name", None),
+            RequiredFilter("description", "some value"),
+            Filter("gt_id", "sample_id > %s", 1),
+            Filter("lt_id", "sample_id < %s", 3),
+        )
+
+        assert prepare_query_statements(query, params) == (
+            """
+            SELECT * FROM table WHERE
+                (true OR description=%s)
+                AND (sample_id > %s OR sample_id < %s)
+            """,
+            ("some value", 1, 3),
         )
 
     def test_lots_of_ors(self) -> None:
