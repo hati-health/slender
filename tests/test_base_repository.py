@@ -283,6 +283,102 @@ class TestPrepareQuery:
             (1, 3),
         )
 
+    def test_4_or_group(self) -> None:
+        query = """
+            SELECT * FROM table WHERE
+                {name} AND
+                {description} AND (
+                    {gt_id} OR
+                    {lt_id} OR
+                    {gte_id} OR
+                    {lte_id}
+                )
+            """
+        params = (
+            ILike("name", None),
+            ILike("description", None),
+            Filter("gt_id", "sample_id > %s", 1),
+            Filter("lt_id", "sample_id < %s", 3),
+            Filter("gte_id", "sample_id >= %s", None),
+            Filter("lte_id", "sample_id <= %s", None),
+        )
+
+        assert prepare_query_statements(query, params) == (
+            """
+            SELECT * FROM table WHERE
+                true AND
+                true AND (
+                    sample_id > %s OR
+                    sample_id < %s OR
+                    false OR
+                    false
+                )
+            """,
+            (1, 3),
+        )
+
+    def test_3_or_group(self) -> None:
+        query = """
+            SELECT * FROM table WHERE
+                {name} AND
+                {description} AND (
+                    {gt_id} OR
+                    {lt_id} OR
+                    {gte_id}
+                )
+            """
+        params = (
+            ILike("name", None),
+            ILike("description", None),
+            Filter("gt_id", "sample_id > %s", 1),
+            Filter("lt_id", "sample_id < %s", 3),
+            Filter("gte_id", "sample_id >= %s", None),
+        )
+
+        assert prepare_query_statements(query, params) == (
+            """
+            SELECT * FROM table WHERE
+                true AND
+                true AND (
+                    sample_id > %s OR
+                    sample_id < %s OR
+                    false
+                )
+            """,
+            (1, 3),
+        )
+
+    def test_non_in_or_group_specified(self) -> None:
+        query = """
+            SELECT * FROM table WHERE
+                {name} AND
+                {description} AND (
+                    {gt_id} OR
+                    {lt_id} OR
+                    {gte_id}
+                )
+            """
+        params = (
+            ILike("name", "some"),
+            ILike("description", None),
+            Filter("gt_id", "sample_id > %s", None),
+            Filter("lt_id", "sample_id < %s", None),
+            Filter("gte_id", "sample_id >= %s", None),
+        )
+
+        assert prepare_query_statements(query, params) == (
+            """
+            SELECT * FROM table WHERE
+                name ILIKE %s AND
+                true AND (
+                    true OR
+                    true OR
+                    true
+                )
+            """,
+            ("%some%",),
+        )
+
     def test_lots_of_ors(self) -> None:
         query = """
             SELECT *
