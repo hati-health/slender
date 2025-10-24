@@ -34,7 +34,8 @@ codespell: .pre-commit
 
 .PHONY: pip-audit  ## Run all checks
 pip-audit: .uv
-	uv run --with pip-audit pip-audit --desc
+	uv run --with pip-audit pip-audit --desc \
+		--ignore-vuln GHSA-4xh5-x5gv-qwph # Moderate severity (pip), no fix available
 
 .PHONY: check  ## Run all checks
 check: .uv lint codespell pip-audit

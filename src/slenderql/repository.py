@@ -107,13 +107,17 @@ class OrAndNotSupportedError(ValueError):
         super().__init__("AND {field} OR is not supported, use brackets to group ORs")
 
 
+MIXED_OR_AND_PATTERN = re.compile(r"\sAND\s+\{(\w+)\}\s+OR\s", flags=re.IGNORECASE)
+OR_GROUPS_PATTERN = re.compile(r"\{\w+\}(?:\s+OR\s+\{\w+\})+", flags=re.IGNORECASE)
+OR_FILTERS_PATTERN = re.compile(r"\{(\w+)\}", flags=re.IGNORECASE)
+
+
 def find_all_or_filters(data: str) -> list[str]:
-    if re.findall(r"\sAND\s+\{(\w+)\}\s+OR\s", data, flags=re.IGNORECASE):
+    if MIXED_OR_AND_PATTERN.findall(data):
         raise OrAndNotSupportedError
 
-    groups = re.findall(
-        r"\{(\w+)\}\s+OR\s+\{(\w+)\}(\s+OR\s+\{(\w+)\})?", data, flags=re.IGNORECASE
-    )
+    groups = OR_GROUPS_PATTERN.findall(data)
+    groups = [OR_FILTERS_PATTERN.findall(g) for g in groups]
 
     result = []
     grouped_result = []
@@ -150,6 +154,7 @@ def prepare_query_statements(query: str, params: list[Any]) -> tuple[str, tuple]
     effective_params = []
 
     all_matches, grouped_matches = find_all_or_filters(query)
+
     or_filters_names = set(all_matches)
     or_filters = {}
 
@@ -179,6 +184,9 @@ def prepare_query_statements(query: str, params: list[Any]) -> tuple[str, tuple]
         if found_specified:
             continue
 
+        # if within OR filters group we didn't find any filter
+        # with specified value, this means all filters in this group
+        # should be ignored, thus switch them to AND mode
         for filter_name in group_filters:
             or_filters[filter_name].and_mode()
             format_kwargs[filter_name] = or_filters[filter_name].rendered_query

@@ -1,6 +1,6 @@
 [project]
 name = "SlenderQL"
-version = "0.1.5"
+version = "0.1.6"
 description = "Missing library for working with raw SQL in Python/psycopg"
 readme = "README.md"
 authors = [
